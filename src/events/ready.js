@@ -14,12 +14,10 @@ module.exports = {
     logger.success(`Logged in as ${client.user.tag} (ID: ${client.user.id})`);
     logger.info(`Serving ${client.guilds.cache.size} server(s)`);
 
-    // Clean appearance: no custom status text
+    // Apply active presence state
     try {
-      client.user.setPresence({
-        activities: [],
-        status: 'online'
-      });
+      const { applyBotPresence } = require('../utils/statusHelper');
+      applyBotPresence(client);
     } catch (err) {
       logger.warn(`Failed to set presence: ${err.message}`);
     }

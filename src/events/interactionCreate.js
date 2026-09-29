@@ -647,19 +647,28 @@ module.exports = {
       if (customId === 'select_bot_status_presence') {
         currentPresenceState.status = values[0];
         applyBotPresence(client);
-        return interaction.update(buildStatusControlPanel(client));
+        if (!interaction.replied && !interaction.deferred) {
+          await interaction.update(buildStatusControlPanel(client)).catch(() => {});
+        }
+        return;
       }
 
       if (customId === 'select_bot_status_activity_type') {
         currentPresenceState.activityType = Number(values[0]);
         applyBotPresence(client);
-        return interaction.update(buildStatusControlPanel(client));
+        if (!interaction.replied && !interaction.deferred) {
+          await interaction.update(buildStatusControlPanel(client)).catch(() => {});
+        }
+        return;
       }
 
       if (customId === 'select_bot_status_preset_text') {
         currentPresenceState.activityName = values[0] === 'preset_clear' ? '' : values[0];
         applyBotPresence(client);
-        return interaction.update(buildStatusControlPanel(client));
+        if (!interaction.replied && !interaction.deferred) {
+          await interaction.update(buildStatusControlPanel(client)).catch(() => {});
+        }
+        return;
       }
     }
 
