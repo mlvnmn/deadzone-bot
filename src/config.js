@@ -50,17 +50,18 @@ const config = {
     },
     joinLogs: {
       id: process.env.JOIN_LOG_CHANNEL_ID || null,
-      names: [process.env.JOIN_LOG_CHANNEL || 'join-logs', 'join-logs', 'log-duh', 'member-logs']
+      names: [process.env.JOIN_LOG_CHANNEL || 'join-logs', 'join-logs', 'joinleave-log', 'joinleave', 'member-log', 'log-duh', 'member-logs']
     },
     exitLogs: {
       id: process.env.EXIT_LOG_CHANNEL_ID || null,
-      names: [process.env.EXIT_LOG_CHANNEL || 'exit-logs', 'exit-logs', 'leave-logs', 'member-logs']
+      names: [process.env.EXIT_LOG_CHANNEL || 'exit-logs', 'exit-logs', 'leave-logs', 'joinleave-log', 'member-log', 'member-logs']
     },
     inviteTracker: {
       id: process.env.INVITE_TRACKER_CHANNEL_ID || null,
       names: [
         process.env.INVITE_TRACKER_CHANNEL || 'invite-tracker',
         'invite-tracker',
+        'tracker',
         'invites',
         'invite-logs',
         'invite-log',
@@ -97,6 +98,7 @@ const config = {
         process.env.VOICE_LOG_CHANNEL || 'voice-logs',
         'voice-logs',
         'voice-log',
+        'voice-join-leave',
         'voicelogs',
         'vc-logs',
         'vc-log'
@@ -127,8 +129,11 @@ const config = {
         'deletd-message-logs',
         'deleted-message-logs',
         'deleted-messages',
+        'deletes',
         'delete-logs',
-        'message-logs'
+        'message-log',
+        'message-logs',
+        'edit-log'
       ]
     },
     accountLogs: {
@@ -137,6 +142,9 @@ const config = {
         process.env.ACCOUNT_LOG_CHANNEL || 'account-logs',
         'account-logs',
         'accountlogs',
+        'member-log',
+        'server-log',
+        'nickname-change',
         'user-logs',
         'profile-logs'
       ]
