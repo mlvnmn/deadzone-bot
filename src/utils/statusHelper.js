@@ -174,21 +174,23 @@ function buildStatusControlPanel(client) {
  */
 function applyBotPresence(client) {
   try {
-    const activities = currentPresenceState.activityName
-      ? [
-          {
-            name: currentPresenceState.activityName,
-            type: Number(currentPresenceState.activityType)
-          }
-        ]
-      : [];
+    if (!client || !client.user) return false;
 
-    client.user.setPresence({
-      status: currentPresenceState.status,
-      activities
-    });
+    const statusMode = currentPresenceState.status || 'online';
 
-    logger.info(`Updated Bot Presence: Status=${currentPresenceState.status}, ActivityType=${currentPresenceState.activityType}, Text="${currentPresenceState.activityName}"`);
+    // Set status mode directly (dnd / idle / online / invisible)
+    client.user.setStatus(statusMode);
+
+    // Set activity text & type
+    if (currentPresenceState.activityName && currentPresenceState.activityName.trim().length > 0) {
+      client.user.setActivity(currentPresenceState.activityName, {
+        type: Number(currentPresenceState.activityType)
+      });
+    } else {
+      client.user.setActivity();
+    }
+
+    logger.info(`Updated Bot Presence: Status=${statusMode}, ActivityType=${currentPresenceState.activityType}, Text="${currentPresenceState.activityName}"`);
     return true;
   } catch (err) {
     logger.error(`Failed to set bot presence: ${err.message}`);

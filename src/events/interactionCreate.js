@@ -626,13 +626,23 @@ module.exports = {
           !interaction.member.permissions.has(PermissionFlagsBits.ManageGuild) &&
           !interaction.member.permissions.has(PermissionFlagsBits.Administrator)
         ) {
-          return interaction.reply({
+          const permMsg = {
             content: '❌ You must have "Manage Server" or Administrator permissions to use this command.',
             flags: MessageFlags.Ephemeral
-          });
+          };
+          if (interaction.replied || interaction.deferred) {
+            return interaction.followUp(permMsg).catch(() => {});
+          } else {
+            return interaction.reply(permMsg).catch(() => {});
+          }
         }
 
-        return interaction.reply(buildStatusControlPanel(interaction.client));
+        const panelData = buildStatusControlPanel(interaction.client);
+        if (interaction.replied || interaction.deferred) {
+          return interaction.followUp(panelData).catch(() => {});
+        } else {
+          return interaction.reply(panelData).catch(() => {});
+        }
       }
 
       return;
