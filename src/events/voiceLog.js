@@ -3,6 +3,8 @@ const config = require('../config');
 const logger = require('../utils/logger');
 const { resolveChannel } = require('../utils/channelHelper');
 
+const recentVoiceLogs = new Map();
+
 module.exports = {
   name: Events.VoiceStateUpdate,
   async execute(oldState, newState) {
@@ -18,6 +20,23 @@ module.exports = {
 
       const member = newState.member || oldState.member;
       if (!member || member.user.bot) return;
+
+      // Deduplicate rapid duplicate events (ignore identical events within 3 seconds)
+      const eventKey = `${member.id}:${oldChannel?.id || 'none'}:${newChannel?.id || 'none'}`;
+      const nowMs = Date.now();
+      const lastLogged = recentVoiceLogs.get(eventKey);
+
+      if (lastLogged && nowMs - lastLogged < 3000) {
+        return;
+      }
+      recentVoiceLogs.set(eventKey, nowMs);
+
+      // Clean up cache periodically
+      if (recentVoiceLogs.size > 200) {
+        for (const [k, t] of recentVoiceLogs.entries()) {
+          if (nowMs - t > 10000) recentVoiceLogs.delete(k);
+        }
+      }
 
       const logChannel = resolveChannel(guild, config.channels.voiceLogs, 'Voice Logs');
       if (!logChannel) return;
