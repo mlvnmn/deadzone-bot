@@ -240,13 +240,28 @@ module.exports = {
         logger.warn(`[${guild.name}] Channel #${config.channels.inviteTracker.names[0]} not found.`);
       }
 
-      // 6. Check for Create Voice trigger channel
+      // 6. Check for Create Voice trigger channel (auto-create if missing)
       const { isTriggerChannel } = require('../utils/tempVoiceHelper');
-      const createVoiceCh = guild.channels.cache.find((c) => isTriggerChannel(c));
+      const { ChannelType } = require('discord.js');
+      let createVoiceCh = guild.channels.cache.find((c) => isTriggerChannel(c));
       if (createVoiceCh) {
         logger.info(`[${guild.name}] Join-to-Create voice channel active: "${createVoiceCh.name}"`);
       } else {
-        logger.info(`[${guild.name}] Join-to-Create voice channel notice: Create a voice channel named "➕ Create Voice" to enable automatic temp voice rooms.`);
+        const vcCategory = guild.channels.cache.find(
+          (c) => c.type === ChannelType.GuildCategory && (c.name.toLowerCase().includes('voice') || c.name.toLowerCase().includes('gaming'))
+        ) || guild.channels.cache.find((c) => c.type === ChannelType.GuildVoice)?.parent;
+
+        try {
+          createVoiceCh = await guild.channels.create({
+            name: '➕ ᴄʀᴇᴀᴛᴇ ᴠᴏɪᴄᴇ',
+            type: ChannelType.GuildVoice,
+            parent: vcCategory?.id,
+            reason: 'Auto-creating Join-to-Create Voice trigger channel'
+          });
+          logger.success(`[${guild.name}] Auto-created Join-to-Create trigger channel: "${createVoiceCh.name}"`);
+        } catch (err) {
+          logger.warn(`[${guild.name}] Could not auto-create Join-to-Create channel: ${err.message}`);
+        }
       }
     }
 
